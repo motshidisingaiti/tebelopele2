@@ -1,91 +1,34 @@
-# Tebelopele Connect — Backend
+# Tshedimoso
 
-API for the AI-enabled digital health and client engagement platform: conversational
-assistant, appointment booking, health education content, referrals, human escalation,
-WhatsApp integration, and the admin portal's data and auth.
+A single static page — no build step, no backend required. Everything is in
+`index.html`. Themed with Tebelopele Wellness Centre's own brand colors
+(maroon, magenta, orange, gold — sampled from their RFP letterhead and logo).
 
-## Stack
+## Deploy with GitHub Pages (free, ~2 minutes)
 
-- Node.js + Express
-- JSON-file datastore (`src/data/db.json`) — zero setup for a demo/pilot; swap
-  `src/data/store.js` for a real database (Postgres, MySQL) before production without
-  touching the routes
-- Claude (Anthropic API) for the conversational assistant, with a rule-based fallback
-  when no API key is configured, so the whole platform runs offline out of the box
-- WhatsApp Business Cloud API, with a simulated (logged) send mode when no WhatsApp
-  credentials are configured
+1. Create a new repository on GitHub (e.g. `tshedimoso`).
+2. Push this folder to it:
+   ```bash
+   git init
+   git add .
+   git commit -m "Tshedimoso site — Tebelopele theme"
+   git branch -M main
+   git remote add origin https://github.com/<your-username>/<your-repo>.git
+   git push -u origin main
+   ```
+3. On GitHub: go to the repo's **Settings → Pages**, set **Source** to
+   `Deploy from a branch`, branch `main`, folder `/ (root)`, then **Save**.
+4. GitHub gives you a live URL a minute or two later, usually
+   `https://<your-username>.github.io/<your-repo>/`.
 
-## Setup
+## Editing
 
-```bash
-npm install
-cp .env.example .env
-# edit .env — at minimum set JWT_SECRET
-npm start
-```
+One plain HTML file with inline CSS — open `index.html` in any editor and
+change the text or the color variables at the top of the `<style>` block
+directly. No dependencies to install.
 
-The server seeds an admin account, a small health-education library, and a week of
-open appointment slots on first run (see `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`
-in `.env`).
+## Later
 
-Runs on `http://localhost:4000` by default. Check `GET /api/health`.
-
-## Turning on live AI and WhatsApp
-
-- **Claude**: set `ANTHROPIC_API_KEY` (and optionally `ANTHROPIC_MODEL`) in `.env`.
-  Without it, `src/services/aiService.js` uses keyword-based routing instead — same
-  response shape, so nothing downstream changes.
-- **WhatsApp**: set `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, and
-  `WHATSAPP_VERIFY_TOKEN` in `.env`, then point your WhatsApp Business app's webhook
-  at `POST /api/webhooks/whatsapp` (and verify with the matching `GET`). Without
-  credentials, outbound messages are logged instead of sent.
-
-## API summary
-
-| Area | Endpoint | Auth |
-|---|---|---|
-| Health check | `GET /api/health` | none |
-| Login | `POST /api/auth/login` | none |
-| Chat | `POST /api/chat/message` | none (client-facing) |
-| Chat | `GET /api/chat/session/:id` | none* |
-| Appointments | `GET /api/appointments/slots` | none |
-| Appointments | `POST /api/appointments/:id/book` | none |
-| Appointments | `PATCH /api/appointments/:id` | none |
-| Appointments | `GET /api/appointments` | staff/counsellor/admin |
-| Content | `GET /api/content`, `GET /api/content/:id` | none |
-| Content | `POST /api/content`, `PATCH /api/content/:id` | staff/admin |
-| Referrals | `POST /api/referrals` | none |
-| Referrals | `GET /api/referrals`, `PATCH /api/referrals/:id` | staff/counsellor/admin |
-| Escalations | `GET /api/escalations`, `PATCH /api/escalations/:id` | staff/counsellor/admin |
-| WhatsApp webhook | `GET`/`POST /api/webhooks/whatsapp` | Meta signature (verify token) |
-| Analytics | `GET /api/analytics/overview`, `GET /api/analytics/conversations-by-day` | staff/admin |
-
-\* Session lookup has no auth check in this build since it's read by the assistant
-itself; restrict it to staff roles before exposing the API publicly.
-
-For staff-only routes, send `Authorization: Bearer <token>` using the token from
-`POST /api/auth/login`.
-
-## Example: a booking conversation
-
-```bash
-curl -X POST http://localhost:4000/api/chat/message \
-  -H "Content-Type: application/json" \
-  -d '{"message": "I want to book an HIV test"}'
-
-curl "http://localhost:4000/api/appointments/slots?service=HIV%20Testing"
-
-curl -X POST http://localhost:4000/api/appointments/<slot-id>/book \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Kagiso", "phone": "+26771234567"}'
-```
-
-## Notes for a production rollout
-
-- Replace the JSON datastore with a managed database and add migrations.
-- Move reminder sending (`src/services/notificationService.js`) onto a scheduler
-  (cron job or queue) that scans upcoming appointments, rather than calling it
-  directly.
-- Add rate limiting and request logging in front of the public endpoints.
-- Add audit logging for staff actions on client data, per the Data Protection Act
-  requirements noted in the RFP.
+When you're ready to make the chat and admin sections actually functional
+(booking, staff login, live data) rather than a visual demo, that's a separate,
+bigger piece of work — connecting this page to a real backend API.

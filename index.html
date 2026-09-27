@@ -1,15 +1,455 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Tshedimoso — Tebelopele Wellness Centre</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/styles.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tshedimoso — Tebelopele's AI Health & Client Engagement Platform</title>
+<meta name="description" content="Tshedimoso brings appointment booking, health education, referrals and staff escalation into one WhatsApp conversation for Tebelopele Wellness Centre.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Tebelopele brand — sampled from the org's own RFP letterhead: a
+       maroon-to-orange swoosh and a gold sunrise mark. */
+    --maroon-900:#4E1428;
+    --maroon-700:#7A2050;
+    --magenta-600:#9C2F63;
+    --orange-500:#E8702E;
+    --orange-600:#CB5B22;
+    --gold-400:#F5B942;
+    --gold-300:#FBCB6B;
+    --paper:#FFFDFB;
+    --paper-dim:#F7ECE7;
+    --ink:#241421;
+    --ink-soft:#6B5560;
+    --line:#E9DBDF;
+    --white:#FFFFFF;
+    --radius-s:6px;
+    --radius-m:14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    color:var(--maroon-900);
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  p{line-height:1.6;color:var(--ink-soft);}
+  a{color:inherit;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px;position:relative;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  /* ---------- Nav ---------- */
+  header.site{
+    position:sticky;top:0;z-index:50;
+    background:rgba(255,253,251,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;max-width:1120px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{
+    width:34px;height:34px;border-radius:50%;
+    background:conic-gradient(from 220deg, var(--orange-500), var(--gold-400), var(--magenta-600), var(--maroon-900));
+  }
+  .brand-name{font-family:'Fraunces',serif;font-size:1.05rem;color:var(--maroon-900);}
+  .brand-name span{color:var(--orange-600);}
+  nav.links{display:flex;gap:28px;font-size:0.92rem;font-weight:500;}
+  nav.links a{text-decoration:none;color:var(--ink-soft);}
+  nav.links a:hover{color:var(--maroon-900);}
+  .nav-cta{
+    background:var(--maroon-900);color:var(--white);
+    padding:10px 18px;border-radius:999px;font-size:0.88rem;font-weight:600;
+    text-decoration:none;
+  }
+  @media (max-width:760px){ nav.links{display:none;} }
+
+  /* ---------- Hero ---------- */
+  .hero{padding:72px 0 60px;overflow:hidden;position:relative;}
+  .hero-swoosh{
+    position:absolute;top:-220px;left:-260px;width:560px;height:560px;border-radius:50%;
+    background:conic-gradient(from 200deg, var(--maroon-700), var(--magenta-600) 30%, var(--orange-500) 60%, var(--gold-400) 78%, var(--maroon-700));
+    opacity:0.14;filter:blur(2px);z-index:0;pointer-events:none;
+  }
+  .hero-grid{display:grid;grid-template-columns:1.05fr 0.95fr;gap:56px;align-items:center;position:relative;z-index:1;}
+  @media (max-width:900px){ .hero-grid{grid-template-columns:1fr;} }
+  .eyebrow{
+    font-size:0.85rem;color:var(--orange-600);font-weight:600;margin-bottom:14px;
+  }
+  .hero h1{font-size:clamp(2.1rem,4vw,3.2rem);line-height:1.08;}
+  .hero p.lead{font-size:1.08rem;max-width:46ch;margin-top:18px;}
+  .hero-actions{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--maroon-900);color:var(--white);padding:13px 24px;border-radius:999px;
+    text-decoration:none;font-weight:600;font-size:0.95rem;border:none;cursor:pointer;
+  }
+  .btn-ghost{
+    background:transparent;color:var(--maroon-900);padding:13px 22px;border-radius:999px;
+    text-decoration:none;font-weight:600;font-size:0.95rem;border:1.5px solid var(--maroon-900);
+  }
+  .hero-stats{display:flex;gap:34px;margin-top:44px;}
+  .stat b{display:block;font-family:'Fraunces',serif;font-size:1.6rem;color:var(--maroon-900);}
+  .stat span{font-size:0.82rem;color:var(--ink-soft);}
+
+  /* Phone chat mock */
+  .phone{
+    background:var(--maroon-900);border-radius:34px;padding:14px;
+    box-shadow:0 30px 60px -20px rgba(78,20,40,0.45);
+    max-width:340px;margin:0 auto;
+  }
+  .phone-screen{
+    background:var(--paper);border-radius:22px;overflow:hidden;height:520px;
+    display:flex;flex-direction:column;
+  }
+  .chat-head{
+    background:linear-gradient(120deg, var(--maroon-700), var(--magenta-600));
+    color:var(--white);padding:16px 18px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .chat-head .avatar{
+    width:30px;height:30px;border-radius:50%;flex-shrink:0;
+    background:conic-gradient(from 220deg, var(--orange-500), var(--gold-400), var(--magenta-600));
+  }
+  .chat-head .who b{display:block;font-size:0.88rem;}
+  .chat-head .who span{font-size:0.72rem;color:#F0C9DB;}
+  .chat-body{flex:1;padding:16px;display:flex;flex-direction:column;gap:10px;overflow:hidden;background:var(--paper-dim);}
+  .bubble{max-width:82%;padding:10px 13px;border-radius:14px;font-size:0.83rem;line-height:1.42;opacity:0;animation:rise 0.5s ease forwards;}
+  .bubble.in{background:var(--white);color:var(--ink);border-bottom-left-radius:4px;align-self:flex-start;box-shadow:0 1px 2px rgba(0,0,0,0.06);}
+  .bubble.out{background:var(--orange-500);color:var(--white);border-bottom-right-radius:4px;align-self:flex-end;}
+  .bubble .opts{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+  .bubble .opts button{
+    background:var(--paper);border:1px solid var(--line);color:var(--maroon-700);
+    font-size:0.78rem;padding:7px 10px;border-radius:8px;text-align:left;cursor:default;font-family:inherit;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .b1{animation-delay:0.2s;} .b2{animation-delay:0.9s;} .b3{animation-delay:1.6s;} .b4{animation-delay:2.3s;}
+  .chat-input{padding:12px 14px;border-top:1px solid var(--line);background:var(--white);display:flex;gap:8px;align-items:center;}
+  .chat-input .field{flex:1;background:var(--paper-dim);border-radius:999px;padding:9px 14px;font-size:0.8rem;color:var(--ink-soft);}
+  .chat-input .send{
+    width:32px;height:32px;border-radius:50%;flex-shrink:0;
+    background:linear-gradient(135deg, var(--orange-500), var(--gold-400));
+  }
+
+  /* ---------- Section shell ---------- */
+  section{padding:72px 0;}
+  .section-head{max-width:640px;margin-bottom:44px;}
+  .section-head .eyebrow{margin-bottom:10px;}
+  .section-head h2{font-size:clamp(1.7rem,3vw,2.2rem);}
+  .section-head p{margin-top:14px;font-size:1.02rem;}
+
+  /* ---------- Channels strip ---------- */
+  .channels{background:var(--maroon-900);}
+  .channels .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;padding-top:34px;padding-bottom:34px;}
+  .channels p{color:#E9C3D3;margin:0;font-size:0.92rem;}
+  .channel-list{display:flex;gap:28px;flex-wrap:wrap;}
+  .channel-list .ch{display:flex;align-items:center;gap:8px;color:var(--white);font-size:0.88rem;font-weight:500;}
+  .ch-dot{width:8px;height:8px;border-radius:50%;background:var(--gold-400);}
+  .ch.future{color:#C99BAE;}
+  .ch.future .ch-dot{background:transparent;border:1.5px solid #C99BAE;}
+
+  /* ---------- Journey ---------- */
+  .journey{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line);}
+  @media (max-width:860px){ .journey{grid-template-columns:1fr;} }
+  .journey .step{padding:30px 26px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .journey .step:last-child{border-right:none;}
+  .step .num{font-family:'Fraunces',serif;color:var(--orange-600);font-size:1.4rem;margin-bottom:10px;display:block;}
+  .step h3{font-size:1.02rem;margin-bottom:8px;}
+  .step p{font-size:0.88rem;}
+
+  /* ---------- Feature list ---------- */
+  .features{border-top:1px solid var(--line);}
+  .feature-row{
+    display:grid;grid-template-columns:280px 1fr;gap:40px;
+    padding:30px 0;border-bottom:1px solid var(--line);
+  }
+  @media (max-width:760px){ .feature-row{grid-template-columns:1fr;gap:10px;} }
+  .feature-row h3{font-size:1.15rem;color:var(--maroon-900);}
+  .feature-row .tag{font-size:0.76rem;color:var(--orange-600);font-weight:600;margin-top:4px;display:block;}
+  .feature-row p{font-size:0.95rem;max-width:56ch;}
+
+  /* ---------- Portal preview ---------- */
+  .portal{background:var(--maroon-900);color:var(--white);}
+  .portal .section-head h2{color:var(--white);}
+  .portal .section-head .eyebrow{color:var(--gold-400);}
+  .portal .section-head p{color:#E9C3D3;}
+  .portal-shot{
+    background:var(--white);border-radius:var(--radius-m);overflow:hidden;
+    box-shadow:0 40px 80px -30px rgba(0,0,0,0.5);
+  }
+  .portal-bar{background:var(--paper-dim);padding:12px 18px;display:flex;gap:8px;border-bottom:1px solid var(--line);}
+  .portal-bar span{width:10px;height:10px;border-radius:50%;background:var(--line);}
+  .portal-grid{display:grid;grid-template-columns:190px 1fr;min-height:320px;}
+  .portal-nav{background:var(--paper-dim);padding:20px 16px;border-right:1px solid var(--line);}
+  .portal-nav .pitem{padding:9px 10px;border-radius:8px;font-size:0.8rem;color:var(--ink-soft);margin-bottom:4px;}
+  .portal-nav .pitem.active{background:var(--white);color:var(--maroon-900);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,0.06);}
+  .portal-main{padding:24px;}
+  .portal-main h4{font-family:'Fraunces',serif;color:var(--ink);font-size:1.05rem;margin-bottom:16px;}
+  .kpi-row{display:flex;gap:14px;margin-bottom:20px;flex-wrap:wrap;}
+  .kpi{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 16px;min-width:120px;}
+  .kpi b{display:block;font-family:'Fraunces',serif;font-size:1.3rem;color:var(--maroon-900);}
+  .kpi span{font-size:0.72rem;color:var(--ink-soft);}
+  .bar-chart{display:flex;align-items:flex-end;gap:8px;height:90px;}
+  .bar-chart .bar{background:var(--orange-500);border-radius:3px 3px 0 0;}
+
+  /* ---------- Trust ---------- */
+  .trust-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;}
+  @media (max-width:800px){ .trust-grid{grid-template-columns:1fr;} }
+  .trust-list{list-style:none;margin:0;padding:0;}
+  .trust-list li{padding:14px 0;border-top:1px solid var(--line);font-size:0.94rem;color:var(--ink-soft);display:flex;gap:12px;}
+  .trust-list li:last-child{border-bottom:1px solid var(--line);}
+  .trust-list b{color:var(--maroon-900);}
+
+  /* ---------- CTA ---------- */
+  .cta{background:var(--paper-dim);text-align:center;}
+  .cta h2{font-size:clamp(1.6rem,3.4vw,2.3rem);max-width:16ch;margin:0 auto;}
+  .cta p{max-width:48ch;margin:16px auto 0;}
+  .cta .hero-actions{justify-content:center;margin-top:28px;}
+
+  footer{border-top:1px solid var(--line);padding:40px 0;}
+  .foot-grid{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;font-size:0.82rem;color:var(--ink-soft);}
+  .foot-grid a{text-decoration:none;color:var(--ink-soft);}
+</style>
 </head>
 <body>
-  <div id="app"></div>
-  <script type="module" src="js/app.js"></script>
+
+<header class="site">
+  <div class="nav">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-name">Tshedimoso <span>Connect</span></div>
+    </div>
+    <nav class="links">
+      <a href="#how">How it works</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#portal">Admin portal</a>
+      <a href="#trust">Privacy</a>
+    </nav>
+    <a class="nav-cta" href="#try">See a conversation</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-swoosh"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">AI-enabled digital health &amp; client engagement</div>
+      <h1>The front door to Tebelopele's care, open on WhatsApp.</h1>
+      <p class="lead">Clients book appointments, get health education, and reach the right person — day or night — through a conversation that feels like texting a clinic staff member who never sleeps.</p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="#try">See a sample conversation</a>
+        <a class="btn-ghost" href="#capabilities">What it does</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><b>24/7</b><span>Client access</span></div>
+        <div class="stat"><b>1</b><span>Number to remember</span></div>
+        <div class="stat"><b>&lt;1 min</b><span>To escalate to a human</span></div>
+      </div>
+    </div>
+
+    <div id="try">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="chat-head">
+            <div class="avatar"></div>
+            <div class="who"><b>Tshedimoso</b><span>Typically replies instantly</span></div>
+          </div>
+          <div class="chat-body">
+            <div class="bubble in b1">Dumela! I'm Tshedimoso, Tebelopele's digital assistant. How can I help today — book a visit, get health information, or speak with staff?</div>
+            <div class="bubble out b2">I'd like to book an HIV testing appointment</div>
+            <div class="bubble in b3">Sure. Here are the next available slots at Gaborone Centre:
+              <div class="opts">
+                <button>Tue 30 Sep — 09:30</button>
+                <button>Tue 30 Sep — 14:00</button>
+                <button>Wed 01 Oct — 10:15</button>
+              </div>
+            </div>
+            <div class="bubble in b4">If anything feels urgent before then, I can connect you with a counsellor right now — just say "talk to someone."</div>
+          </div>
+          <div class="chat-input">
+            <div class="field">Type a message…</div>
+            <div class="send"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="channels">
+  <div class="wrap">
+    <p>Reaches clients where they already are</p>
+    <div class="channel-list">
+      <div class="ch"><span class="ch-dot"></span>WhatsApp</div>
+      <div class="ch"><span class="ch-dot"></span>Web portal</div>
+      <div class="ch future"><span class="ch-dot"></span>Mobile app — planned</div>
+      <div class="ch future"><span class="ch-dot"></span>SMS — planned</div>
+    </div>
+  </div>
+</div>
+
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">How a visit begins</div>
+      <h2>One conversation, four things handled</h2>
+      <p>Tshedimoso is a navigation tool, not a diagnosis — it moves a client from question to the right service, and hands off to staff the moment something needs a person.</p>
+    </div>
+  </div>
+  <div class="journey">
+    <div class="step">
+      <span class="num">01</span>
+      <h3>Ask</h3>
+      <p>A client messages with a question, a symptom worry, or a request — in their own words, no menus to hunt through.</p>
+    </div>
+    <div class="step">
+      <span class="num">02</span>
+      <h3>Understand</h3>
+      <p>Tshedimoso matches the request to TWC and Ministry of Health-approved information, or the correct service pathway.</p>
+    </div>
+    <div class="step">
+      <span class="num">03</span>
+      <h3>Act</h3>
+      <p>Book, reschedule, or cancel an appointment; send a reminder; route a referral — logged straight into TWC's systems.</p>
+    </div>
+    <div class="step">
+      <span class="num">04</span>
+      <h3>Escalate</h3>
+      <p>Anything urgent or beyond scope is hand-carried to a counsellor or clinician, with the conversation history attached.</p>
+    </div>
+  </div>
+</section>
+
+<section id="capabilities" class="features">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Capabilities</div>
+      <h2>Built around the scope of one platform</h2>
+    </div>
+
+    <div class="feature-row">
+      <div><h3>Conversational assistant</h3><span class="tag">Client-facing</span></div>
+      <p>Understands free-text questions in the way clients actually ask them, and keeps the tone of a trusted health worker — never clinical jargon, never a maze of menus.</p>
+    </div>
+    <div class="feature-row">
+      <div><h3>Appointment booking</h3><span class="tag">Client-facing</span></div>
+      <p>Book, reschedule, or cancel across TWC's services and locations, with automated reminders ahead of the visit and follow-up nudges after it.</p>
+    </div>
+    <div class="feature-row">
+      <div><h3>Health education</h3><span class="tag">Client-facing</span></div>
+      <p>Delivers TWC and Ministry of Health-approved content on prevention, testing, and treatment, personalised to what the client has asked about.</p>
+    </div>
+    <div class="feature-row">
+      <div><h3>Referral &amp; navigation</h3><span class="tag">Client-facing</span></div>
+      <p>Points clients to the right service or facility, and tracks referrals through to completion rather than leaving them as a dead end.</p>
+    </div>
+    <div class="feature-row">
+      <div><h3>Human escalation</h3><span class="tag">Safety</span></div>
+      <p>Any urgent, sensitive, or out-of-scope moment is handed to a counsellor or clinician immediately, with full conversation context.</p>
+    </div>
+    <div class="feature-row">
+      <div><h3>Administration portal</h3><span class="tag">Staff-facing</span></div>
+      <p>Staff manage content, appointments, and users, and monitor conversations and escalations from one dashboard.</p>
+    </div>
+    <div class="feature-row">
+      <div><h3>Analytics &amp; reporting</h3><span class="tag">Staff-facing</span></div>
+      <p>Engagement, booking, and referral trends surface as evidence TWC can act on and report against.</p>
+    </div>
+  </div>
+</section>
+
+<section id="portal" class="portal">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Web-based administration portal</div>
+      <h2>What staff see behind the conversation</h2>
+      <p>A single dashboard for content, appointments, escalations, and the numbers that show the platform is working.</p>
+    </div>
+
+    <div class="portal-shot">
+      <div class="portal-bar"><span></span><span></span><span></span></div>
+      <div class="portal-grid">
+        <div class="portal-nav">
+          <div class="pitem active">Overview</div>
+          <div class="pitem">Appointments</div>
+          <div class="pitem">Conversations</div>
+          <div class="pitem">Referrals</div>
+          <div class="pitem">Content library</div>
+          <div class="pitem">Users &amp; access</div>
+          <div class="pitem">Reports</div>
+        </div>
+        <div class="portal-main">
+          <h4>This week at a glance</h4>
+          <div class="kpi-row">
+            <div class="kpi"><b>1,284</b><span>Conversations</span></div>
+            <div class="kpi"><b>412</b><span>Appointments booked</span></div>
+            <div class="kpi"><b>37</b><span>Escalated to staff</span></div>
+            <div class="kpi"><b>96%</b><span>Reminder delivery</span></div>
+          </div>
+          <div class="bar-chart">
+            <div class="bar" style="height:40%;width:18px;"></div>
+            <div class="bar" style="height:65%;width:18px;"></div>
+            <div class="bar" style="height:50%;width:18px;"></div>
+            <div class="bar" style="height:80%;width:18px;"></div>
+            <div class="bar" style="height:60%;width:18px;"></div>
+            <div class="bar" style="height:90%;width:18px;"></div>
+            <div class="bar" style="height:45%;width:18px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="trust">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Data protection &amp; safeguards</div>
+      <h2>Care that stays confidential</h2>
+      <p>Health information is sensitive by nature. Tshedimoso is built to Botswana's Data Protection Act and applicable health information and cybersecurity legislation.</p>
+    </div>
+    <div class="trust-grid">
+      <ul class="trust-list">
+        <li><b>01</b>&nbsp; All platforms, AI models, APIs, cloud infrastructure and data processors are disclosed and reviewable by TWC.</li>
+        <li><b>02</b>&nbsp; Client conversations and records are encrypted and access-controlled by staff role.</li>
+        <li><b>03</b>&nbsp; The assistant never replaces clinical judgement — it routes, it does not diagnose.</li>
+      </ul>
+      <ul class="trust-list">
+        <li><b>04</b>&nbsp; Escalation is automatic whenever a conversation touches something urgent or clinically significant.</li>
+        <li><b>05</b>&nbsp; Integrations are scoped to what's approved, with a clear line between live and future access.</li>
+        <li><b>06</b>&nbsp; TWC staff are trained on administration, privacy, and troubleshooting before go-live.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <h2>Care that meets clients where they already are</h2>
+    <p>Tshedimoso brings booking, education, and referral into one conversation — and keeps a human one message away.</p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#try">See a sample conversation</a>
+      <a class="btn-ghost" href="#portal">Explore the portal</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div>Tebelopele Wellness Centre — Gaborone International Commerce Park, Plot 39, Unit 4, Private Bag 112, Gaborone</div>
+    <div><a href="https://www.tebelopele.org.bw">www.tebelopele.org.bw</a></div>
+  </div>
+</footer>
+
 </body>
 </html>
